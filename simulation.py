@@ -1,7 +1,7 @@
 import sequential
 import pandas as pd
 import networkx as nx
-
+import copy
 # def selectSeeds(graph, forSingleStage):
 #
 #     seedsForSingleStage = []
@@ -31,9 +31,9 @@ import networkx as nx
 
 def selectSeeds(graph, forSingleStage):
 
-    print('voteRank', nx.voterank(createNxGraph(graph), 2))
+    print('voteRank', nx.voterank(createNxGraph(graph), forSingleStage))
 
-    return nx.voterank(createNxGraph(graph), 2)
+    return nx.voterank(createNxGraph(graph), forSingleStage)
 
 
 def mapEdgeList(graph, edgeList):
@@ -51,7 +51,7 @@ def createNxGraph(graph):
 def simulation(pp, seeds, graph, coordinatedExecution):
 
 
-    seedsForSequnetial = selectSeeds(graph, 2)
+    seedsForSequnetial = selectSeeds(graph, 1)
 
     # TODO napisać jakiś fajny warunek stopu np kiedy już infectedNodes jednego i drugiego procesu nie zwiększają się od kilkunastu kroków
     # seedsForSingleStage, seedsForSequnetial = selectSeedsForBeginProceses(graph = graph, forSingleStage = 3, forSequential = 3)
@@ -59,5 +59,11 @@ def simulation(pp, seeds, graph, coordinatedExecution):
     # while True:
 
     infectedNodesBySequential = []
+    isInfecting = True
 
-    infectedNodesBySequential = sequential.sequential(pp = pp, step = 1, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution,                                                                            seeds = seedsForSequnetial)
+    step = 1;
+
+
+    infectedNodesBySequential = sequential.sequential(pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution,                                                                            seeds = seedsForSequnetial)
+
+

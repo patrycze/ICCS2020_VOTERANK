@@ -5,78 +5,89 @@ def sequential(pp, step, graph, infectedNodes, coordinatedExecution, seeds):
 
     nodes = Graph.vcount(graph)
 
-    for v in graph.vs:
-        print(v)
+    # for v in graph.vs:
+    #     print(v)
 
-    print('number of nodes => ', nodes)
+    # print('number of nodes => ', nodes)
+    # print('pp => ', pp)
 
     for i in range(0, nodes):
         graph.vs[i]["infected"] = 0
         graph.vs[i]["used"] = 0
         graph.vs[i]["stepinfected"] = 0
 
-
+    infections = 0
+    isInfecting = True
 
     # for index, node in seeds.iterrows():
     for name in seeds:
 
         node = graph.vs.select(name=name)[0]
-        print(node, graph.neighbors(name, mode="out"))
+        # print(node, graph.neighbors(name, mode="out"))
 
         node["infected"] = 1
         node["stepinfected"] = 0
         node["used"] = 0
+        node["color"] = "green"
     infections = 0;
 
-    for j in range(0, nodes):
+    while(isInfecting):
 
-        if (graph.vs[j]["infected"] == 1 and graph.vs[j]["used"] == 0 and graph.vs[j]["stepinfected"] != step):
+        infecting = infections
 
-            graph.vs[j]["used"] = 1
-            neighborstab = graph.neighbors(j, mode="out")
+        for j in range(0, nodes):
 
-            if (len(neighborstab) > 0):
+            if (graph.vs[j]["infected"] == 1 and graph.vs[j]["used"] == 0 and graph.vs[j]["stepinfected"] != step):
 
-                n = 0
-                notinfected = []
-                for i in range(0, len(neighborstab)):
-                    if (graph.vs[neighborstab[i]]["infected"] == 0):
-                        notinfected.append(neighborstab[i])
+                graph.vs[j]["used"] = 1
+                neighborstab = graph.neighbors(j, mode="out")
 
-                numberofneighbors = len(notinfected)
+                if (len(neighborstab) > 0):
 
-                if notinfected:
-                    for k in notinfected:
+                    n = 0
+                    notinfected = []
+                    for i in range(0, len(neighborstab)):
+                        if (graph.vs[neighborstab[i]]["infected"] == 0):
+                            notinfected.append(neighborstab[i])
 
-                        if (numberofneighbors >= 1):
+                    numberofneighbors = len(notinfected)
 
-                            # tru = ((coordinatedExecution['A'] == j) & (coordinatedExecution['B'] == k)).any()
+                    if notinfected:
+                        for k in notinfected:
 
-                            y = random.uniform(0, 1)
+                            if (numberofneighbors >= 1):
 
-                            print(j, k)
-                            print('neighborstab', neighborstab)
-                            print('graph.vs[j]', graph.vs[j]['name'], graph.vs[[k]]['name'])
-                            x = coordinatedExecution.loc[((coordinatedExecution['source'] == graph.vs[j]['name']) & (
-                                    coordinatedExecution['target'] == graph.vs[[k]]['name'])), 'weight'].iloc[0]
+                                # tru = ((coordinatedExecution['A'] == j) & (coordinatedExecution['B'] == k)).any()
 
-                            if x <= y:
-                                # print('zarażony')
+                                # print(j, k)
+                                # print('neighborstab', neighborstab)
+                                # print('graph.vs[j]', graph.vs[j]['name'], graph.vs[[k]]['name'])
+                                x = coordinatedExecution.loc[((coordinatedExecution['source'] == graph.vs[j]['name']) & (
+                                        coordinatedExecution['target'] == graph.vs[[k]]['name'])), 'weight'].iloc[0]
 
-                                graph.vs[k]["infected"] = 1
-                                graph.vs[k]["stepinfected"] = step
-                                graph.vs[k]["used"] = 0
+                                if x <= pp:
+                                    # print('zarażony')
 
-                                infections = infections + 1
+                                    graph.vs[k]["infected"] = 1
+                                    graph.vs[k]["stepinfected"] = step
+                                    graph.vs[k]["used"] = 0
+                                    graph.vs[k]["color"] = "blue"
 
-                                infectedNodes.append(graph.vs[k]['name'])
+                                    infections = infections + 1
 
-        # TODO: TO DO WYNIESIENIA
-        # s = s + 1
-        # if (infecting == infections):
-        #     isInfecting = False
+                                    infectedNodes.append(graph.vs[k]['name'])
 
-    print(infections)
+            # TODO: TO DO WYNIESIENIA
 
-    print(infections / nodes * 100)
+        if (infecting == infections):
+            isInfecting = False
+        else:
+            step = step + 1
 
+    # plot(graph)
+    print('step', step)
+    print('infections', infections + len(seeds))
+    print('infections', (infections + len(seeds)) / nodes * 100)
+    print('infectedNodes', infectedNodes)
+
+    return infectedNodes

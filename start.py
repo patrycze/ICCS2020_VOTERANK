@@ -15,7 +15,7 @@ from igraph import *
 # pp = float(sys.argv[1])
 # size  = int(sys.argv[2])
 # seeds = int(sys.argv[3])
-pp = 0.1
+pp = 1.0
 seeds = 2
 
 
