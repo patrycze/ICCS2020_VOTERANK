@@ -1,7 +1,10 @@
 from igraph import *
 import random
+import csv
 
-def sequential(pp, step, graph, infectedNodes, coordinatedExecution, seeds):
+def sequential(nr, name, pp, step, graph, infectedNodes, coordinatedExecution, seeds):
+
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds','numberOfNodes', 'infectedPerStep', 'infectedTotal']
 
     nodes = Graph.vcount(graph)
 
@@ -34,6 +37,7 @@ def sequential(pp, step, graph, infectedNodes, coordinatedExecution, seeds):
     while(isInfecting):
 
         infecting = infections
+        infectionsPerStep = 0
 
         for j in range(0, nodes):
 
@@ -57,11 +61,6 @@ def sequential(pp, step, graph, infectedNodes, coordinatedExecution, seeds):
 
                             if (numberofneighbors >= 1):
 
-                                # tru = ((coordinatedExecution['A'] == j) & (coordinatedExecution['B'] == k)).any()
-
-                                # print(j, k)
-                                # print('neighborstab', neighborstab)
-                                # print('graph.vs[j]', graph.vs[j]['name'], graph.vs[[k]]['name'])
                                 x = coordinatedExecution.loc[((coordinatedExecution['source'] == graph.vs[j]['name']) & (
                                         coordinatedExecution['target'] == graph.vs[[k]]['name'])), 'weight'].iloc[0]
 
@@ -74,10 +73,19 @@ def sequential(pp, step, graph, infectedNodes, coordinatedExecution, seeds):
                                     graph.vs[k]["color"] = "blue"
 
                                     infections = infections + 1
+                                    infectionsPerStep = infectionsPerStep + 1
 
                                     infectedNodes.append(graph.vs[k]['name'])
 
             # TODO: TO DO WYNIESIENIA
+
+
+        myFile = open('results_calc_1_step.csv', 'a')
+        with myFile:
+            writer = csv.DictWriter(myFile, fieldnames=myFields)
+            writer.writerow({'nr': nr, 'nazwa': name, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes,
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': infections})
+
 
         if (infecting == infections):
             isInfecting = False

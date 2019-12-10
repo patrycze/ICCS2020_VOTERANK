@@ -18,35 +18,52 @@ from igraph import *
 pp = 1.0
 seeds = 2
 
+network = 1
 
-# pobieram graf
-graphDataFrame = pd.read_csv('networks/2.txt', sep=" ", usecols=[0, 1], header=None)
-tuples = [tuple(x1) for x1 in graphDataFrame.values]
-graph = Graph.TupleList(tuples, directed=False)
+myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'numberOfNodes', 'infectedPerStep', 'infectedTotal']
+myFile = open('results_calc_1_step.csv', 'w')
 
-
-
-# pobieram coordinated execution
-edgesWieghtDataFrame = pd.read_csv('networks/2.txt', sep=" ", usecols=[0, 1, 2, 3], header=None,
-                                   names=['source', 'target', 'w1', 'w2'])
-
-print('1', edgesWieghtDataFrame.size)
-
-df2 = pd.DataFrame({'source':edgesWieghtDataFrame['target'],
-                    'target':edgesWieghtDataFrame['source'],
-                    'w1':edgesWieghtDataFrame['w2']})
+# myFile = open('results_calc_every_step.csv', 'w')
+with myFile:
+    writer = csv.DictWriter(myFile, fieldnames=myFields)
+    writer.writeheader()
 
 
 
-concatedEdgesWiegh = pd.concat([edgesWieghtDataFrame, df2], join='inner', ignore_index=True)
+for file in os.listdir('networks/'):
+    # print()
+    # print(file.split('_')[1][0])
+    name = file.split('_')[0]
+    numberOfCoordinatedExecution = file.split('_')[1][0]
 
-# concatedEdgesWiegh[]
+    # pobieram graf
+    graphDataFrame = pd.read_csv('networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1], header=None)
+    tuples = [tuple(x1) for x1 in graphDataFrame.values]
+    graph = Graph.TupleList(tuples, directed=False)
 
-concatedEdgesWiegh = concatedEdgesWiegh.rename(columns={'w1': 'weight'})
 
-print('concatedEdgesWiegh', concatedEdgesWiegh)
 
-simulation.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh)
+    # pobieram coordinated execution
+    edgesWieghtDataFrame = pd.read_csv('networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1, 2, 3], header=None,
+                                       names=['source', 'target', 'w1', 'w2'])
+
+    print('1', edgesWieghtDataFrame.size)
+
+    df2 = pd.DataFrame({'source':edgesWieghtDataFrame['target'],
+                        'target':edgesWieghtDataFrame['source'],
+                        'w1':edgesWieghtDataFrame['w2']})
+
+
+
+    concatedEdgesWiegh = pd.concat([edgesWieghtDataFrame, df2], join='inner', ignore_index=True)
+
+    # concatedEdgesWiegh[]
+
+    concatedEdgesWiegh = concatedEdgesWiegh.rename(columns={'w1': 'weight'})
+
+    print('concatedEdgesWiegh', concatedEdgesWiegh)
+
+    simulation.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name)
 
 
 # for i in graph.vs:
