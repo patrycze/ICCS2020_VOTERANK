@@ -1,4 +1,4 @@
-import sequential
+import sequential_with_calculate
 import pandas as pd
 import networkx as nx
 import copy
@@ -51,7 +51,7 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
         print('seedsForSequnetial', seedsForSequnetial)
 
         infectedNodesBySequential = []
-        graph, step = sequential.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial)
+        graph, step = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial)
 
         seedsForSequnetial = selectSeedsUninfected(graph=graph, forSequential=seeds)
 

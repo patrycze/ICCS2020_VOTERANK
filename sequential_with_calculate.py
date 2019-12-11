@@ -91,12 +91,13 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
             # TODO: TO DO WYNIESIENIA
 
+        totalInfected = [v.index for v in graph.vs if 1 is v['infected']]
 
         myFile = open('results_calc_1_step.csv', 'a')
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
             writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes, 'step': step,
-                             'infectedPerStep': infectionsPerStep, 'infectedTotal': infections,  'infectedTotalPercentage': (infections + len(seeds)) / nodes * 100})
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100})
 
 
         step = step + 1

@@ -1,6 +1,7 @@
 import csv
 
-import simulation as simulation
+import simulation_with_calculate as simulation_with_calculate
+import simulation_without_calculate as simulation_without_calculate
 import sys
 import pandas as pd
 from igraph import *
@@ -61,7 +62,7 @@ for file in os.listdir('networks/'):
 
     # print('concatedEdgesWiegh', concatedEdgesWiegh)
 
-    simulation.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name)
+    simulation_with_calculate.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name)
 
 
 # for i in graph.vs:
