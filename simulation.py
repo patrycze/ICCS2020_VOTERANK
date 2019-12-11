@@ -4,12 +4,30 @@ import networkx as nx
 import copy
 import csv
 
-def selectSeeds(graph, forSingleStage):
+def selectSeeds(graph, forSequential):
 
-    # print('voteRank', nx.voterank(createNxGraph(graph), forSingleStage))
+    # print('voteRank', forSequential, nx.voterank(createNxGraph(graph), forSequential))
+    # for v in graph.vs:
+    #         print(v)
 
-    return nx.voterank(createNxGraph(graph), forSingleStage)
+    return nx.voterank(createNxGraph(graph), forSequential)
 
+def selectSeedsUninfected(graph, forSequential):
+
+    # wyrzucam tutaj z sieci zainfekowane węzły
+    try:
+        to_delete_ids = [v.index for v in graph.vs if 1 is v['infected']]
+    except:
+        to_delete_ids = []
+
+    # print(to_delete_ids)
+
+    uninfectedGraph = copy.copy(graph)
+
+    # usunięcie po idkach ale pamiętać że ciągle kierujemy się attr NAME!!!!
+    uninfectedGraph.delete_vertices(to_delete_ids)
+
+    return selectSeeds(graph = uninfectedGraph, forSequential = forSequential)
 
 def mapEdgeList(graph, edgeList):
     mapped = []
@@ -25,13 +43,15 @@ def createNxGraph(graph):
 
 def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
 
-
-    seedsForSequnetial = selectSeeds(graph, 1)
-
     step = 1;
+    seedsForSequnetial = selectSeedsUninfected(graph = graph, forSequential = seeds)
 
-    infectedNodesBySequential = []
+    while(len(seedsForSequnetial) > 0):
 
-    infectedNodesBySequential = sequential.sequential(nr = numberOfCoordinatedExecution, name = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution,                                                                            seeds = seedsForSequnetial)
+        print('seedsForSequnetial', seedsForSequnetial)
 
+        infectedNodesBySequential = []
+        graph, step = sequential.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial)
+
+        seedsForSequnetial = selectSeedsUninfected(graph=graph, forSequential=seeds)
 

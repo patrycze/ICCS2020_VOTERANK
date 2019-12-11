@@ -15,12 +15,12 @@ from igraph import *
 # pp = float(sys.argv[1])
 # size  = int(sys.argv[2])
 # seeds = int(sys.argv[3])
-pp = 1.0
+pp = 0.1
 seeds = 2
 
 network = 1
 
-myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'numberOfNodes', 'infectedPerStep', 'infectedTotal']
+myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage']
 myFile = open('results_calc_1_step.csv', 'w')
 
 # myFile = open('results_calc_every_step.csv', 'w')
@@ -47,8 +47,6 @@ for file in os.listdir('networks/'):
     edgesWieghtDataFrame = pd.read_csv('networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1, 2, 3], header=None,
                                        names=['source', 'target', 'w1', 'w2'])
 
-    print('1', edgesWieghtDataFrame.size)
-
     df2 = pd.DataFrame({'source':edgesWieghtDataFrame['target'],
                         'target':edgesWieghtDataFrame['source'],
                         'w1':edgesWieghtDataFrame['w2']})
@@ -61,7 +59,7 @@ for file in os.listdir('networks/'):
 
     concatedEdgesWiegh = concatedEdgesWiegh.rename(columns={'w1': 'weight'})
 
-    print('concatedEdgesWiegh', concatedEdgesWiegh)
+    # print('concatedEdgesWiegh', concatedEdgesWiegh)
 
     simulation.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name)
 

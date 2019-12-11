@@ -2,22 +2,22 @@ from igraph import *
 import random
 import csv
 
-def sequential(nr, name, pp, step, graph, infectedNodes, coordinatedExecution, seeds):
+def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds):
 
-    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds','numberOfNodes', 'infectedPerStep', 'infectedTotal']
+
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds','numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage']
 
     nodes = Graph.vcount(graph)
 
-    # for v in graph.vs:
-    #     print(v)
+
 
     # print('number of nodes => ', nodes)
     # print('pp => ', pp)
-
-    for i in range(0, nodes):
-        graph.vs[i]["infected"] = 0
-        graph.vs[i]["used"] = 0
-        graph.vs[i]["stepinfected"] = 0
+    if(step == 1):
+        for i in range(0, nodes):
+            graph.vs[i]["infected"] = 0
+            graph.vs[i]["used"] = 0
+            graph.vs[i]["stepinfected"] = 0
 
     infections = 0
     isInfecting = True
@@ -29,12 +29,24 @@ def sequential(nr, name, pp, step, graph, infectedNodes, coordinatedExecution, s
         # print(node, graph.neighbors(name, mode="out"))
 
         node["infected"] = 1
-        node["stepinfected"] = 0
+
+        if(step > 1):
+            node["stepinfected"] = step
+        else:
+            node["stepinfected"] = 0
+
         node["used"] = 0
         node["color"] = "green"
+
+
     infections = 0;
 
+    for v in graph.vs:
+        print('in sequential', v)
+
     while(isInfecting):
+
+        print('step', step)
 
         infecting = infections
         infectionsPerStep = 0
@@ -83,19 +95,18 @@ def sequential(nr, name, pp, step, graph, infectedNodes, coordinatedExecution, s
         myFile = open('results_calc_1_step.csv', 'a')
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
-            writer.writerow({'nr': nr, 'nazwa': name, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes,
-                             'infectedPerStep': infectionsPerStep, 'infectedTotal': infections})
+            writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes, 'step': step,
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': infections,  'infectedTotalPercentage': (infections + len(seeds)) / nodes * 100})
 
+
+        step = step + 1
 
         if (infecting == infections):
             isInfecting = False
-        else:
-            step = step + 1
 
     # plot(graph)
-    print('step', step)
-    print('infections', infections + len(seeds))
-    print('infections', (infections + len(seeds)) / nodes * 100)
-    print('infectedNodes', infectedNodes)
+    # print('infections', infections + len(seeds))
+    # print('infections', (infections + len(seeds)) / nodes * 100)
+    # print('infectedNodes', infectedNodes)
 
-    return infectedNodes
+    return graph, step
