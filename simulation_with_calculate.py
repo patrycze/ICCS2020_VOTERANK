@@ -50,6 +50,6 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
         infectedNodesBySequential = []
         graph, step = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial)
 
-        # przeliczam co krok ranking 
+        # przeliczam co krok ranking
         seedsForSequnetial = selectSeedsUninfected(graph=graph, forSequential=seeds)
-
+        print('seedsForSequnetial', seedsForSequnetial)

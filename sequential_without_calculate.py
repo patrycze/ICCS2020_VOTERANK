@@ -41,8 +41,8 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
     infections = 0;
 
-    for v in graph.vs:
-        print('in sequential', v)
+    # for v in graph.vs:
+    #     print('in sequential', v)
 
     while(isInfecting):
 
