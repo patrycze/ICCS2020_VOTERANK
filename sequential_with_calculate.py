@@ -93,7 +93,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         totalInfected = [v.index for v in graph.vs if 1 is v['infected']]
 
-        myFile = open('results_calc_1_step.csv', 'a')
+        myFile = open('results_with_calculate.csv', 'a')
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
             writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes, 'step': step,

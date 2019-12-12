@@ -5,14 +5,12 @@ import copy
 import csv
 from igraph import *
 
+# metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
-
-    # print('voteRank', forSequential, nx.voterank(createNxGraph(graph), forSequential))
-    # for v in graph.vs:
-    #         print(v)
-
     return nx.voterank(createNxGraph(graph), forSequential)
 
+
+# metoda do wycięcia grafu jedynie z niezainfekowanymi węzłami
 def selectSeedsUninfected(graph, forSequential):
 
     # wyrzucam tutaj z sieci zainfekowane węzły
@@ -45,13 +43,11 @@ def createNxGraph(graph):
 def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
 
     step = 1;
+
+    # robimy tylko 1 ranking na początku!! :)
     seedsForSequnetial = selectSeedsUninfected(graph = graph, forSequential = Graph.vcount(graph))
 
     while(len(seedsForSequnetial) > 0):
-
-        print('seedsForSequnetial', seedsForSequnetial)
-
-        print('seedsForSequnetial selected', seedsForSequnetial[:seeds])
 
         if(len(seedsForSequnetial) > seeds):
             selectedSeeds = copy.copy(seedsForSequnetial[:seeds])

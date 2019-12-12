@@ -4,14 +4,12 @@ import networkx as nx
 import copy
 import csv
 
+# metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
-
-    # print('voteRank', forSequential, nx.voterank(createNxGraph(graph), forSequential))
-    # for v in graph.vs:
-    #         print(v)
-
     return nx.voterank(createNxGraph(graph), forSequential)
 
+
+# metoda do wycięcia grafu jedynie z niezainfekowanymi węzłami
 def selectSeedsUninfected(graph, forSequential):
 
     # wyrzucam tutaj z sieci zainfekowane węzły
@@ -20,8 +18,6 @@ def selectSeedsUninfected(graph, forSequential):
     except:
         to_delete_ids = []
 
-    # print(to_delete_ids)
-
     uninfectedGraph = copy.copy(graph)
 
     # usunięcie po idkach ale pamiętać że ciągle kierujemy się attr NAME!!!!
@@ -29,6 +25,8 @@ def selectSeedsUninfected(graph, forSequential):
 
     return selectSeeds(graph = uninfectedGraph, forSequential = forSequential)
 
+
+# metoda a właściwie marshaller do reprezentacji nie przez indexy a przez nazwy, (ciągle kierujemy się nazwami a nie idkami!!!)
 def mapEdgeList(graph, edgeList):
     mapped = []
 
@@ -37,6 +35,7 @@ def mapEdgeList(graph, edgeList):
 
     return mapped
 
+# metoda do utowrzenia grafu zrozumiałego przez networkx w celu obliczenia voteranka
 def createNxGraph(graph):
     A = mapEdgeList(graph, graph.get_edgelist())
     return nx.Graph(A)
@@ -48,10 +47,9 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
 
     while(len(seedsForSequnetial) > 0):
 
-        print('seedsForSequnetial', seedsForSequnetial)
-
         infectedNodesBySequential = []
         graph, step = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial)
 
+        # przeliczam co krok ranking 
         seedsForSequnetial = selectSeedsUninfected(graph=graph, forSequential=seeds)
 
