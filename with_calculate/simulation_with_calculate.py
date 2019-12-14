@@ -3,10 +3,15 @@ import pandas as pd
 import networkx as nx
 import copy
 import csv
-
+from timeit import default_timer as timer
+from datetime import timedelta
 # metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
-    return nx.voterank(createNxGraph(graph), forSequential)
+    start = timer()
+    voteRank = nx.voterank(createNxGraph(graph), forSequential)
+    end = timer()
+
+    return voteRank, timedelta(seconds=end-start)
 
 
 # metoda do wycięcia grafu jedynie z niezainfekowanymi węzłami
@@ -43,13 +48,13 @@ def createNxGraph(graph):
 def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
 
     step = 1;
-    seedsForSequnetial = selectSeedsUninfected(graph = graph, forSequential = seeds)
+    seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
 
     while(len(seedsForSequnetial) > 0):
 
         infectedNodesBySequential = []
-        graph, step = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial)
+        graph, step = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time)
 
         # przeliczam co krok ranking
-        seedsForSequnetial = selectSeedsUninfected(graph=graph, forSequential=seeds)
-        print('seedsForSequnetial', seedsForSequnetial)
+        seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
+        print('seedsForSequnetial', seedsForSequnetial, time)

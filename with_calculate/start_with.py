@@ -22,12 +22,12 @@ seeds = 2
 
 network = 1
 
-myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage']
+myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime']
 
-myFile = open('results_without_calculate.csv', 'w')
-with myFile:
-    writer = csv.DictWriter(myFile, fieldnames=myFields)
-    writer.writeheader()
+# myFile = open('results_without_calculate.csv', 'w')
+# with myFile:
+#     writer = csv.DictWriter(myFile, fieldnames=myFields)
+#     writer.writeheader()
 
 myFile = open('results_with_calculate.csv', 'w')
 with myFile:

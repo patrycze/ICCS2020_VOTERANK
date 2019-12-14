@@ -1,13 +1,18 @@
-import sequential_without_calculate
+import sequential_fix_interval
 import pandas as pd
 import networkx as nx
 import copy
 import csv
-from igraph import *
+from timeit import default_timer as timer
+from datetime import timedelta
 
 # metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
-    return nx.voterank(createNxGraph(graph), forSequential)
+    start = timer()
+    voteRank = nx.voterank(createNxGraph(graph), forSequential)
+    end = timer()
+
+    return voteRank, timedelta(seconds=end-start)
 
 
 # metoda do wycięcia grafu jedynie z niezainfekowanymi węzłami
@@ -19,8 +24,6 @@ def selectSeedsUninfected(graph, forSequential):
     except:
         to_delete_ids = []
 
-    # print(to_delete_ids)
-
     uninfectedGraph = copy.copy(graph)
 
     # usunięcie po idkach ale pamiętać że ciągle kierujemy się attr NAME!!!!
@@ -28,6 +31,8 @@ def selectSeedsUninfected(graph, forSequential):
 
     return selectSeeds(graph = uninfectedGraph, forSequential = forSequential)
 
+
+# metoda a właściwie marshaller do reprezentacji nie przez indexy a przez nazwy, (ciągle kierujemy się nazwami a nie idkami!!!)
 def mapEdgeList(graph, edgeList):
     mapped = []
 
@@ -36,6 +41,7 @@ def mapEdgeList(graph, edgeList):
 
     return mapped
 
+# metoda do utowrzenia grafu zrozumiałego przez networkx w celu obliczenia voteranka
 def createNxGraph(graph):
     A = mapEdgeList(graph, graph.get_edgelist())
     return nx.Graph(A)
@@ -43,25 +49,12 @@ def createNxGraph(graph):
 def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
 
     step = 1;
-
-    # robimy tylko 1 ranking na początku!! :)
-    seedsForSequnetial = selectSeedsUninfected(graph = graph, forSequential = Graph.vcount(graph))
-
-    while(len(seedsForSequnetial) > 0):
-
-        if(len(seedsForSequnetial) > seeds):
-            selectedSeeds = copy.copy(seedsForSequnetial[:seeds])
-        else:
-            selectedSeeds = copy.copy(seedsForSequnetial)
-
-        infectedNodesBySequential = []
-        graph, step = sequential_without_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = selectedSeeds)
+    seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
 
 
-        # usuwam wykorzystane seedy z tablicy
+    infectedNodesBySequential = []
+    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = 2)
 
-        if (len(seedsForSequnetial) > seeds):
-            del seedsForSequnetial[:seeds]
-        else:
-            seedsForSequnetial = []
-
+        # przeliczam co krok ranking
+        # seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
+        # print('seedsForSequnetial', seedsForSequnetial, time)

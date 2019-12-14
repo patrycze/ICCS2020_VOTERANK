@@ -2,11 +2,15 @@ from igraph import *
 import random
 import csv
 
-def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds):
 
+def calculateNumberOfSeeds(graph):
+    seeds = [v.index for v in graph.vs if 1 is v['isSeed']]
+    return len(seeds)
 
-    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds','numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage']
+def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time):
 
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'step',
+                'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime']
     nodes = Graph.vcount(graph)
 
 
@@ -18,6 +22,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
             graph.vs[i]["infected"] = 0
             graph.vs[i]["used"] = 0
             graph.vs[i]["stepinfected"] = 0
+            graph.vs[i]["isSeed"] = 0
 
     infections = 0
     isInfecting = True
@@ -37,6 +42,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         node["used"] = 0
         node["color"] = "green"
+        node["isSeed"] = 1
 
 
     infections = 0;
@@ -74,7 +80,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
                             if (numberofneighbors >= 1):
 
                                 x = coordinatedExecution.loc[((coordinatedExecution['source'] == graph.vs[j]['name']) & (
-                                        coordinatedExecution['target'] == graph.vs[[k]]['name'])), 'weight'].iloc[0]
+                                        coordinatedExecution['target'] == graph.vs[[k]]['name'][0])), 'weight'].iloc[0]
 
                                 if x <= pp:
                                     # print('zarażony')
@@ -93,11 +99,11 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         totalInfected = [v.index for v in graph.vs if 1 is v['infected']]
 
-        myFile = open('results_with_calculate.csv', 'a')
+        myFile = open('results_without_calculate.csv', 'a')
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
-            writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes, 'step': step,
-                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100})
+            writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds,  'totalNumberOfSeeds': calculateNumberOfSeeds(graph), 'numberOfNodes': nodes, 'step': step,
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time})
 
 
         step = step + 1
