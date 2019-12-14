@@ -51,10 +51,10 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
     step = 1;
     seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
 
-
-    infectedNodesBySequential = []
-    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = 2)
+    while (len(seedsForSequnetial) > 0):
+        infectedNodesBySequential = []
+        graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = 2)
 
         # przeliczam co krok ranking
-        # seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
-        # print('seedsForSequnetial', seedsForSequnetial, time)
+        seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
+        print('seedsForSequnetial', seedsForSequnetial, time)

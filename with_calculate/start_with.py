@@ -1,7 +1,6 @@
 import csv
 
 import simulation_with_calculate as simulation_with_calculate
-import simulation_without_calculate as simulation_without_calculate
 import sys
 import pandas as pd
 from igraph import *
@@ -35,20 +34,20 @@ with myFile:
     writer.writeheader()
 
 
-for file in os.listdir('networks/'):
+for file in os.listdir('../networks/'):
 
     name = file.split('_')[0]
     numberOfCoordinatedExecution = file.split('_')[1][0]
 
     # pobieram graf
-    graphDataFrame = pd.read_csv('networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1], header=None)
+    graphDataFrame = pd.read_csv('../networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1], header=None)
     tuples = [tuple(x1) for x1 in graphDataFrame.values]
     graph = Graph.TupleList(tuples, directed=False)
 
 
 
     # pobieram coordinated execution
-    edgesWieghtDataFrame = pd.read_csv('networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1, 2, 3], header=None,
+    edgesWieghtDataFrame = pd.read_csv('../networks/' + name + '_' + numberOfCoordinatedExecution + '.txt', sep=" ", usecols=[0, 1, 2, 3], header=None,
                                        names=['source', 'target', 'w1', 'w2'])
 
     df2 = pd.DataFrame({'source':edgesWieghtDataFrame['target'],

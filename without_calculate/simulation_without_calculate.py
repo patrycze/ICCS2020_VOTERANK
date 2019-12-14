@@ -6,6 +6,7 @@ import csv
 from igraph import *
 from timeit import default_timer as timer
 from datetime import timedelta
+import random
 
 # metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
@@ -46,6 +47,18 @@ def createNxGraph(graph):
     A = mapEdgeList(graph, graph.get_edgelist())
     return nx.Graph(A)
 
+
+def selectSeedsRandomly(uninfectedNodes, forSequential):
+    print('selectSeedsRandomly =>', uninfectedNodes)
+    if(len(uninfectedNodes) >= forSequential):
+        return random.choices(uninfectedNodes, k=forSequential)
+    else:
+        return uninfectedNodes
+
+def calculateUninfected(graph):
+    uninfected = [v['name'] for v in graph.vs if 0 is v['infected']]
+    return uninfected
+
 def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
 
     step = 1;
@@ -53,21 +66,26 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
     # robimy tylko 1 ranking na początku!! :)
     seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = Graph.vcount(graph))
 
-    while(len(seedsForSequnetial) > 0):
+    uninfected = [0, 0]
+
+    while(len(uninfected) > 0):
 
         if(len(seedsForSequnetial) > seeds):
             selectedSeeds = copy.copy(seedsForSequnetial[:seeds])
         else:
-            selectedSeeds = copy.copy(seedsForSequnetial)
+            selectedSeeds = selectSeedsRandomly(uninfected, forSequential=seeds)
+        #     selectedSeeds = copy.copy(seedsForSequnetial)
 
         infectedNodesBySequential = []
         graph, step = sequential_without_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = selectedSeeds, time = time)
 
+        #zlicz niezainfekowanych
+        uninfected = copy.copy(calculateUninfected(graph))
 
         # usuwam wykorzystane seedy z tablicy
-
         if (len(seedsForSequnetial) > seeds):
             del seedsForSequnetial[:seeds]
         else:
             seedsForSequnetial = []
+
 

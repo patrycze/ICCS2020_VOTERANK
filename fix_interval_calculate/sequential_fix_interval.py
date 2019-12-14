@@ -140,5 +140,5 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
         if (infecting == infections):
             isInfecting = False
 
-
+    #plot(graph)
     return graph, step

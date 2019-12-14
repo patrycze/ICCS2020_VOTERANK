@@ -5,13 +5,28 @@ import copy
 import csv
 from timeit import default_timer as timer
 from datetime import timedelta
+import random
+
 # metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
     start = timer()
     voteRank = nx.voterank(createNxGraph(graph), forSequential)
     end = timer()
 
+    if(len(voteRank) < forSequential):
+        voteRank = copy.copy(selectSeedsRandomly(graph, forSequential))
+
     return voteRank, timedelta(seconds=end-start)
+
+def selectSeedsRandomly(graph, forSequential):
+    ids = [v['name'] for v in graph.vs]
+
+    print('ids =>', ids)
+
+    if(len(ids) >= forSequential):
+        return random.choices(ids, k=forSequential)
+    else:
+        return ids
 
 
 # metoda do wycięcia grafu jedynie z niezainfekowanymi węzłami
