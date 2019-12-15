@@ -5,6 +5,7 @@ import copy
 import csv
 from timeit import default_timer as timer
 from datetime import timedelta
+import random
 
 # metoda oblicza voteRank
 def selectSeeds(graph, forSequential):
@@ -12,7 +13,21 @@ def selectSeeds(graph, forSequential):
     voteRank = nx.voterank(createNxGraph(graph), forSequential)
     end = timer()
 
-    return voteRank, timedelta(seconds=end-start)
+    if (len(voteRank) < forSequential):
+        voteRank = copy.copy(selectSeedsRandomly(graph, forSequential))
+
+    return voteRank, timedelta(seconds=end - start)
+
+def selectSeedsRandomly(graph, forSequential):
+    ids = [v['name'] for v in graph.vs]
+
+    print('ids =>', ids)
+
+    if(len(ids) >= forSequential):
+        return random.choices(ids, k=forSequential)
+    else:
+        return ids
+
 
 
 # metoda do wycięcia grafu jedynie z niezainfekowanymi węzłami
@@ -51,10 +66,10 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
     step = 1;
     seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
 
-    while (len(seedsForSequnetial) > 0):
-        infectedNodesBySequential = []
-        graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = 2)
+    # while (len(seedsForSequnetial) > 0):
+    infectedNodesBySequential = []
+    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = 2)
 
         # przeliczam co krok ranking
-        seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
-        print('seedsForSequnetial', seedsForSequnetial, time)
+        # seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
+    print('seedsForSequnetial', seedsForSequnetial, time)

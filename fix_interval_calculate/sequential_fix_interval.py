@@ -23,6 +23,7 @@ def markAsSeeds(seeds, graph, step):
         node["isSeed"] = 1
 
 
+
 def calculateNumberOfSeeds(graph):
     seeds = [v.index for v in graph.vs if 1 is v['isSeed']]
     return len(seeds)
@@ -138,7 +139,9 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
         print(isInfecting)
 
         if (infecting == infections):
-            isInfecting = False
+            seeds, time = selectSeedsUninfected(graph, 2)
+            if(len(seeds) == 0):
+                isInfecting = False
 
     #plot(graph)
     return graph, step

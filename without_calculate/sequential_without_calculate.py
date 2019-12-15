@@ -63,11 +63,16 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
                 graph.vs[j]["used"] = 1
                 neighborstab = graph.neighbors(j, mode="out")
+                # print('neighborstab', set(neighborstab))
+
+
 
                 if (len(neighborstab) > 0):
 
                     n = 0
                     notinfected = []
+
+                    # tutaj jest błąd!!!!
                     for i in range(0, len(neighborstab)):
                         if (graph.vs[neighborstab[i]]["infected"] == 0):
                             notinfected.append(neighborstab[i])
@@ -98,6 +103,8 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
             # TODO: TO DO WYNIESIENIA
 
         totalInfected = [v.index for v in graph.vs if 1 is v['infected']]
+
+        print(len(infectedNodes), infectedNodes)
 
         myFile = open('results_without_calculate.csv', 'a')
         with myFile:
