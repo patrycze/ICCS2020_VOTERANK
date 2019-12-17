@@ -17,12 +17,13 @@ from igraph import *
 # seeds = int(sys.argv[3])
 
 pp = 0.1
-seeds = 2
+seeds = 4
+interval = 4
 
 network = 1
 
 myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'step',
-            'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime']
+            'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'interval']
 
 myFile = open('results_fix_interval.csv', 'w')
 with myFile:
@@ -54,6 +55,7 @@ for file in os.listdir('../networks/'):
         concatedEdgesWiegh = pd.concat([edgesWieghtDataFrame, df2], join='inner', ignore_index=True)
 
         concatedEdgesWiegh = concatedEdgesWiegh.rename(columns={'w1': 'weight'})
-
-        simulation_fix_interval.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name)
+        for interval in [2, 4, 8, 16]:
+            for seeds in [2, 4, 8, 16]:
+                simulation_fix_interval.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name, interval=interval)
 

@@ -21,7 +21,7 @@ def selectSeeds(graph, forSequential):
 def selectSeedsRandomly(graph, forSequential):
     ids = [v['name'] for v in graph.vs]
 
-    print('ids =>', ids)
+    # print('ids =>', ids)
 
     if(len(ids) >= forSequential):
         return random.choices(ids, k=forSequential)
@@ -61,15 +61,20 @@ def createNxGraph(graph):
     A = mapEdgeList(graph, graph.get_edgelist())
     return nx.Graph(A)
 
-def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
+def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name, interval):
 
     step = 1;
-    seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
 
+    graphCopy = copy.copy(graph)
+
+    seedsForSequnetial, time = selectSeedsUninfected(graph = graphCopy, forSequential = seeds)
+
+
+    print('numberOfSeeds', seeds, seedsForSequnetial)
     # while (len(seedsForSequnetial) > 0):
     infectedNodesBySequential = []
-    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = 2)
+    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graphCopy, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = interval)
 
-        # przeliczam co krok ranking
-        # seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
+    # przeliczam co krok ranking
+    # seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
     print('seedsForSequnetial', seedsForSequnetial, time)

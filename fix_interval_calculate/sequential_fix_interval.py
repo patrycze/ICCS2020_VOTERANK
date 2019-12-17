@@ -31,7 +31,7 @@ def calculateNumberOfSeeds(graph):
 def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time, interval):
 
 
-    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime']
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'interval']
 
     nodes = Graph.vcount(graph)
 
@@ -50,6 +50,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
     infections = 0
     isInfecting = True
 
+    numberOfSeeds = len(seeds)
     # for index, node in seeds.iterrows():
     for name in seeds:
 
@@ -71,11 +72,11 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
     while(isInfecting):
 
-        print('step', step)
+        # print('step', step)
         # ponieważ fix_interval zakłada że dodajemy seedy w stale okreslonym czasie musimy tutaj sprawdzać w przypadku odstępu 2 kroków step mod 2 == 0
         if(step > 1 and step % interval == 0):
-            seeds, time = selectSeedsUninfected(graph, 2)
-            print('in step ==>', step, 'we selected =>', seeds, 'in time =>', time)
+            seeds, time = selectSeedsUninfected(graph, numberOfSeeds)
+            # print('in step ==>', step, 'we selected =>', seeds, 'in time =>', time)
             markAsSeeds(seeds, graph, step)
 
         infecting = infections
@@ -129,17 +130,17 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
             writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'totalNumberOfSeeds': calculateNumberOfSeeds(graph), 'numberOfNodes': nodes, 'step': step,
-                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time})
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time, 'interval': interval})
 
 
         step = step + 1
 
-        print(infecting, infections)
-        print(infecting == infections)
-        print(isInfecting)
+        # print(infecting, infections)
+        # print(infecting == infections)
+        # print(isInfecting)
 
         if (infecting == infections):
-            seeds, time = selectSeedsUninfected(graph, 2)
+            # seeds, time = selectSeedsUninfected(graph, 2)
             if(len(seeds) == 0):
                 isInfecting = False
 
