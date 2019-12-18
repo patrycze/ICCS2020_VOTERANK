@@ -28,7 +28,7 @@ def calculateNumberOfSeeds(graph):
     seeds = [v.index for v in graph.vs if 1 is v['isSeed']]
     return len(seeds)
 
-def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time, interval):
+def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time, interval, limit):
 
 
     myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'interval']
@@ -75,9 +75,12 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
         # print('step', step)
         # ponieważ fix_interval zakłada że dodajemy seedy w stale okreslonym czasie musimy tutaj sprawdzać w przypadku odstępu 2 kroków step mod 2 == 0
         if(step > 1 and step % interval == 0):
-            seeds, time = selectSeedsUninfected(graph, numberOfSeeds)
-            # print('in step ==>', step, 'we selected =>', seeds, 'in time =>', time)
-            markAsSeeds(seeds, graph, step)
+
+            # limit poniewaz liczymy tylko z 1 2 3 4 5% z calej sieci
+            if(calculateNumberOfSeeds(graph) < limit):
+                seeds, time = selectSeedsUninfected(graph, numberOfSeeds)
+                # print('in step ==>', step, 'we selected =>', seeds, 'in time =>', time)
+                markAsSeeds(seeds, graph, step)
 
         infecting = infections
 
@@ -141,8 +144,8 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         if (infecting == infections):
             # seeds, time = selectSeedsUninfected(graph, 2)
-            if(len(seeds) == 0):
+            if(len(seeds) == 0 or calculateNumberOfSeeds(graph) >= limit):
                 isInfecting = False
 
-    #plot(graph)
+    # plot(graph)
     return graph, step

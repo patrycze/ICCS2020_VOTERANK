@@ -16,7 +16,7 @@ from igraph import *
 # size  = int(sys.argv[2])
 # seeds = int(sys.argv[3])
 
-pp = 0.1
+pp = 0.3
 seeds = 4
 interval = 4
 
@@ -55,7 +55,7 @@ for file in os.listdir('../networks/'):
         concatedEdgesWiegh = pd.concat([edgesWieghtDataFrame, df2], join='inner', ignore_index=True)
 
         concatedEdgesWiegh = concatedEdgesWiegh.rename(columns={'w1': 'weight'})
-        for interval in [2, 4, 8, 16]:
-            for seeds in [2, 4, 8, 16]:
+        for interval in [2]:
+            for seeds in [2]:
                 simulation_fix_interval.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name, interval=interval)
 

@@ -60,10 +60,17 @@ def createNxGraph(graph):
     A = mapEdgeList(graph, graph.get_edgelist())
     return nx.Graph(A)
 
+
+def calculateLimiForSeeding(graph, limit):
+    print(len(graph.vs))
+    return len(graph.vs)
+
 def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
 
     step = 1;
     seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
+
+    calculateLimiForSeeding(graph)
 
     while(len(seedsForSequnetial) > 0):
 

@@ -1,3 +1,5 @@
+from __future__ import division
+
 import sequential_fix_interval
 import pandas as pd
 import networkx as nx
@@ -46,6 +48,9 @@ def selectSeedsUninfected(graph, forSequential):
 
     return selectSeeds(graph = uninfectedGraph, forSequential = forSequential)
 
+def calculateLimiForSeeding(graph, limit):
+    # print((len(graph.vs) * limit)/100)
+    return int(len(graph.vs) * limit)/100
 
 # metoda a właściwie marshaller do reprezentacji nie przez indexy a przez nazwy, (ciągle kierujemy się nazwami a nie idkami!!!)
 def mapEdgeList(graph, edgeList):
@@ -67,13 +72,15 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
 
     graphCopy = copy.copy(graph)
 
+    limitForSeeding = calculateLimiForSeeding(graphCopy, 5)
+
     seedsForSequnetial, time = selectSeedsUninfected(graph = graphCopy, forSequential = seeds)
 
 
     print('numberOfSeeds', seeds, seedsForSequnetial)
     # while (len(seedsForSequnetial) > 0):
     infectedNodesBySequential = []
-    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graphCopy, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = interval)
+    graph, step = sequential_fix_interval.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graphCopy, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, interval = interval, limit = limitForSeeding)
 
     # przeliczam co krok ranking
     # seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
