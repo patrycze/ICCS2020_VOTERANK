@@ -28,6 +28,12 @@ with myFile:
     writer = csv.DictWriter(myFile, fieldnames=myFields)
     writer.writeheader()
 
+
+myFile = open('results_without_calculate_last.csv', 'w')
+with myFile:
+    writer = csv.DictWriter(myFile, fieldnames=myFields)
+    writer.writeheader()
+
 # myFile = open('results_with_calculate.csv', 'w')
 # with myFile:
 #     writer = csv.DictWriter(myFile, fieldnames=myFields)

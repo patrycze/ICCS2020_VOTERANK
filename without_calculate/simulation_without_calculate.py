@@ -88,4 +88,12 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
         else:
             seedsForSequnetial = []
 
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'steps', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'limit']
+
+    myFile = open('results_without_calculate.csv', 'a')
+    with myFile:
+        writer = csv.DictWriter(myFile, fieldnames=myFields)
+        writer.writerow({'nr': numberOfCoordinatedExecution, 'nazwa': name, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds,
+                         'totalNumberOfSeeds': calculateNumberOfSeeds(graph), 'numberOfNodes': len(graph.vs), 'steps': step, 'infectedTotal': len(totalInfected),
+                         'infectedTotalPercentage': len(totalInfected) / len(graph.vs) * 100, 'computionalTime': time, 'limit': limit})
 

@@ -123,4 +123,4 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
     # print('infections', (infections + len(seeds)) / nodes * 100)
     # print('infectedNodes', infectedNodes)
 
-    return graph, step
+    return graph, step, totalInfected
