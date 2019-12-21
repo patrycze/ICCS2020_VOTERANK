@@ -7,10 +7,10 @@ def calculateNumberOfSeeds(graph):
     seeds = [v.index for v in graph.vs if 1 is v['isSeed']]
     return len(seeds)
 
-def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time):
+def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time, limit, timeArray):
 
     myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'step',
-                'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime']
+                'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'limitPercentage']
     nodes = Graph.vcount(graph)
 
 
@@ -106,12 +106,13 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         print(len(infectedNodes), infectedNodes)
 
-        myFile = open('results_without_calculate.csv', 'a')
+        myFile = open(str(pp) + '_results_without_calculate.csv', 'a')
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
             writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds,  'totalNumberOfSeeds': calculateNumberOfSeeds(graph), 'numberOfNodes': nodes, 'step': step,
-                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time})
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time, 'limitPercentage': limit})
 
+            timeArray.append(time)
 
         step = step + 1
 
@@ -123,4 +124,4 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
     # print('infections', (infections + len(seeds)) / nodes * 100)
     # print('infectedNodes', infectedNodes)
 
-    return graph, step, totalInfected
+    return graph, step, totalInfected, timeArray

@@ -2,10 +2,10 @@ from igraph import *
 import random
 import csv
 
-def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time):
+def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution, seeds, time, limit, timeArray):
 
 
-    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds','numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime']
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds','numberOfNodes', 'step', 'infectedPerStep', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'limitPercentage']
 
     nodes = Graph.vcount(graph)
 
@@ -18,6 +18,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
             graph.vs[i]["infected"] = 0
             graph.vs[i]["used"] = 0
             graph.vs[i]["stepinfected"] = 0
+            graph.vs[i]["isSeed"] = 0
 
     infections = 0
     isInfecting = True
@@ -37,6 +38,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         node["used"] = 0
         node["color"] = "green"
+        node["isSeed"] = 1
 
 
     infections = 0;
@@ -93,12 +95,14 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
         totalInfected = [v.index for v in graph.vs if 1 is v['infected']]
 
-        myFile = open('results_with_calculate.csv', 'a')
+        myFile = open(str(pp) + '_results_with_calculate.csv', 'a')
         with myFile:
             writer = csv.DictWriter(myFile, fieldnames=myFields)
             writer.writerow({'nr': nr, 'nazwa': network, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds, 'numberOfNodes': nodes, 'step': step,
-                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time})
+                             'infectedPerStep': infectionsPerStep, 'infectedTotal': len(totalInfected),  'infectedTotalPercentage': len(totalInfected) / nodes * 100, 'computionalTime': time,
+                             'limitPercentage': limit})
 
+            timeArray.append(time)
 
         step = step + 1
 
@@ -110,4 +114,4 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
     # print('infections', (infections + len(seeds)) / nodes * 100)
     # print('infectedNodes', infectedNodes)
 
-    return graph, step
+    return graph, step, totalInfected, timeArray

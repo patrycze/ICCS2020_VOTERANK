@@ -60,23 +60,51 @@ def createNxGraph(graph):
     A = mapEdgeList(graph, graph.get_edgelist())
     return nx.Graph(A)
 
-
 def calculateLimiForSeeding(graph, limit):
+    return int(len(graph.vs) * limit)/100
+
+def calculateNumberOfSeeds(graph):
     print(len(graph.vs))
-    return len(graph.vs)
+    if(len(graph.vs) > 0):
+        seeds = [v.index for v in graph.vs if 1 is v['isSeed']]
+    else:
+        seeds = []
+    return len(seeds)
 
-def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
+def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name, limit):
 
+    copyGraph = copy.copy(graph)
     step = 1;
-    seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = seeds)
+    seedsArray = []
+    timeArray = []
 
-    calculateLimiForSeeding(graph)
+    limitForSeeding = calculateLimiForSeeding(copyGraph, limit)
 
-    while(len(seedsForSequnetial) > 0):
+    seedsForSequnetial, time = selectSeedsUninfected(graph = copyGraph, forSequential = seeds)
+
+    seedsArray.append(seedsForSequnetial)
+    timeArray.append(time)
+
+    while(len(seedsForSequnetial) > 0 and len(seedsArray) < limitForSeeding):
 
         infectedNodesBySequential = []
-        graph, step = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time)
+        copyGraph, step, totalInfected, timeArray = sequential_with_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = copyGraph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = seedsForSequnetial, time = time, limit = limit, timeArray = timeArray)
 
         # przeliczam co krok ranking
-        seedsForSequnetial, time = selectSeedsUninfected(graph=graph, forSequential=seeds)
-        print('seedsForSequnetial', seedsForSequnetial, time)
+        seedsForSequnetial, time = selectSeedsUninfected(graph = copyGraph, forSequential=seeds)
+        seedsArray.append(seedsForSequnetial)
+        timeArray.append(time)
+        # print('seedsForSequnetial', seedsForSequnetial, time)
+
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'steps',
+                'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'limitPercentage']
+
+    myFile = open(str(pp) + '_results_with_calculate_last.csv', 'a')
+    with myFile:
+        writer = csv.DictWriter(myFile, fieldnames=myFields)
+        writer.writerow(
+            {'nr': numberOfCoordinatedExecution, 'nazwa': name, 'pp': pp, 'numberOfSeeds': seeds, 'seeds': seeds,
+             'totalNumberOfSeeds': calculateNumberOfSeeds(copyGraph), 'numberOfNodes': len(copyGraph.vs), 'steps': step,
+             'infectedTotal': len(totalInfected),
+             'infectedTotalPercentage': len(totalInfected) / len(copyGraph.vs) * 100, 'computionalTime': timeArray,
+             'limitPercentage': limit})

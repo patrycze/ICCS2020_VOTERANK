@@ -59,28 +59,51 @@ def calculateUninfected(graph):
     uninfected = [v['name'] for v in graph.vs if 0 is v['infected']]
     return uninfected
 
-def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name):
+
+def calculateLimiForSeeding(graph, limit):
+    return int(len(graph.vs) * limit)/100
+
+def calculateNumberOfSeeds(graph):
+    seeds = [v.index for v in graph.vs if 1 is v['isSeed']]
+    return len(seeds)
+
+def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecution, name, limit):
 
     step = 1;
 
+    copyGraph = copy.copy(graph)
+
+    timeArray = []
+    seedsArray = []
+
+    limitForSeeding = calculateLimiForSeeding(graph, limit)
+
     # robimy tylko 1 ranking na początku!! :)
-    seedsForSequnetial, time = selectSeedsUninfected(graph = graph, forSequential = Graph.vcount(graph))
+    seedsForSequnetial, time = selectSeedsUninfected(graph = copyGraph, forSequential = limitForSeeding)
+
+    seedsArray.append(seedsForSequnetial)
+
+    timeArray.append(time)
 
     uninfected = [0, 0]
 
-    while(len(uninfected) > 0):
+    while(len(uninfected) > 0 and len(seedsArray) < limitForSeeding):
 
         if(len(seedsForSequnetial) > seeds):
             selectedSeeds = copy.copy(seedsForSequnetial[:seeds])
+            seedsArray.append(selectedSeeds)
+
         else:
             selectedSeeds = selectSeedsRandomly(uninfected, forSequential=seeds)
+            seedsArray.append(selectedSeeds)
+
         #     selectedSeeds = copy.copy(seedsForSequnetial)
 
         infectedNodesBySequential = []
-        graph, step = sequential_without_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = graph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = selectedSeeds, time = time)
+        copyGraph, step, totalInfected, timeArray = sequential_without_calculate.sequential(nr = numberOfCoordinatedExecution, network = name, pp = pp, step = step, graph = copyGraph, infectedNodes = infectedNodesBySequential, coordinatedExecution = coordinatedExecution, seeds = selectedSeeds, time = time, limit = limit, timeArray = timeArray)
 
         #zlicz niezainfekowanych
-        uninfected = copy.copy(calculateUninfected(graph))
+        uninfected = copy.copy(calculateUninfected(copyGraph))
 
         # usuwam wykorzystane seedy z tablicy
         if (len(seedsForSequnetial) > seeds):
@@ -88,12 +111,12 @@ def simulation(pp, seeds, graph, coordinatedExecution, numberOfCoordinatedExecut
         else:
             seedsForSequnetial = []
 
-    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'steps', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'limit']
 
-    myFile = open('results_without_calculate.csv', 'a')
+    myFields = ['nr', 'nazwa', 'pp', 'numberOfSeeds', 'seeds', 'totalNumberOfSeeds', 'numberOfNodes', 'steps', 'infectedTotal', 'infectedTotalPercentage', 'computionalTime', 'limitPercentage']
+
+    myFile = open(str(pp) + '_results_without_calculate_last.csv', 'a')
     with myFile:
         writer = csv.DictWriter(myFile, fieldnames=myFields)
-        writer.writerow({'nr': numberOfCoordinatedExecution, 'nazwa': name, 'pp': pp, 'numberOfSeeds': len(seeds), 'seeds': seeds,
-                         'totalNumberOfSeeds': calculateNumberOfSeeds(graph), 'numberOfNodes': len(graph.vs), 'steps': step, 'infectedTotal': len(totalInfected),
-                         'infectedTotalPercentage': len(totalInfected) / len(graph.vs) * 100, 'computionalTime': time, 'limit': limit})
-
+        writer.writerow({'nr': numberOfCoordinatedExecution, 'nazwa': name, 'pp': pp, 'numberOfSeeds': seeds, 'seeds': seeds,
+                         'totalNumberOfSeeds': calculateNumberOfSeeds(copyGraph), 'numberOfNodes': len(copyGraph.vs), 'steps': step, 'infectedTotal': len(totalInfected),
+                         'infectedTotalPercentage': len(totalInfected) / len(copyGraph.vs) * 100, 'computionalTime': timeArray, 'limitPercentage': limit})
