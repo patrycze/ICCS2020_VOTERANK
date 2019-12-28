@@ -64,6 +64,6 @@ for file in os.listdir('../networks/'):
         concatedEdgesWiegh = concatedEdgesWiegh.rename(columns={'w1': 'weight'})
         for limit in [1, 2, 3, 4, 5]:
             for interval in [2, 4, 8, 16]:
-                    for seeds in [2]:
+                    for seeds in [2, 4, 8, 16]:
                             simulation_fix_interval.simulation(pp = pp, seeds = seeds, graph = graph, coordinatedExecution = concatedEdgesWiegh, numberOfCoordinatedExecution=numberOfCoordinatedExecution, name=name, interval=interval, limit = limit)
 

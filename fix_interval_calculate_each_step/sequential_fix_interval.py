@@ -92,6 +92,7 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
 
     nodes = Graph.vcount(graph)
 
+    limit = int(limit)
     # selectedSeeds = copy.copy(seeds)
 
     # print('number of nodes => ', nodes)
@@ -139,26 +140,49 @@ def sequential(nr, network, pp, step, graph, infectedNodes, coordinatedExecution
         print('step', step)
         # limit poniewaz liczymy tylko z 1 2 3 4 5% z calej sieci
         if(calculateNumberOfSeeds(graph) < limit):
-            # sprawdzamy czy przeliczac ranking
-            if(step % interval == 0):
-                seeds, time = selectSeedsUninfected(graph, numberOfSeeds * interval)
-                selectedSeeds = copy.copy(seeds[0:numberOfSeeds])
+            if(calculateNumberOfSeeds(graph) + numberOfSeeds > limit):
+                print('(limit - calculateNumberOfSeeds(graph))', limit,  calculateNumberOfSeeds(graph), (limit - calculateNumberOfSeeds(graph)))
+                if (step % interval == 0):
+                    seeds, time = selectSeedsUninfected(graph, numberOfSeeds * interval)
+                    selectedSeeds = copy.copy(seeds[0:(limit - calculateNumberOfSeeds(graph))])
 
-                print('przeliczam in step ==>', step, 'we selected =>', seeds[0:numberOfSeeds], 'in time =>', time, 'but whole ranking =>', seeds)
-                markAsSeeds(seeds[0:numberOfSeeds], graph, step)
+                    print('przeliczam in step ==>', step, 'we selected =>', seeds[0:numberOfSeeds], 'in time =>', time,
+                          'but whole ranking =>', seeds)
+                    markAsSeeds(seeds[0:numberOfSeeds], graph, step)
 
-                #usuwamy z tablicy wykorzystane seedy
-                del seeds[0:numberOfSeeds]
+                    # usuwamy z tablicy wykorzystane seedy
+                    del seeds[0:numberOfSeeds]
+                if (step % interval != 0):
+                    markAsSeeds(seeds[0:(limit - calculateNumberOfSeeds(graph))], graph, step)
+                    print('we selected =>', seeds[0:(limit - calculateNumberOfSeeds(graph))], 'in time =>', time)
+                    selectedSeeds = copy.copy(seeds[0:(limit - calculateNumberOfSeeds(graph))])
 
-            if(step % interval != 0):
-                markAsSeeds(seeds[0:numberOfSeeds], graph, step)
-                print('we selected =>', seeds[0:numberOfSeeds], 'in time =>', time)
-                selectedSeeds = copy.copy(seeds[0:numberOfSeeds])
+                    # usuwamy z tablicy wykorzystane seedy
+                    del seeds[0:numberOfSeeds]
 
-                #usuwamy z tablicy wykorzystane seedy
-                del seeds[0:numberOfSeeds]
+                    print('whole ranking =>', seeds)
 
-                print('whole ranking =>', seeds)
+            else:
+                # sprawdzamy czy przeliczac ranking
+                if(step % interval == 0):
+                    seeds, time = selectSeedsUninfected(graph, numberOfSeeds * interval)
+                    selectedSeeds = copy.copy(seeds[0:numberOfSeeds])
+
+                    print('przeliczam in step ==>', step, 'we selected =>', seeds[0:numberOfSeeds], 'in time =>', time, 'but whole ranking =>', seeds)
+                    markAsSeeds(seeds[0:numberOfSeeds], graph, step)
+
+                    #usuwamy z tablicy wykorzystane seedy
+                    del seeds[0:numberOfSeeds]
+
+                if(step % interval != 0):
+                    markAsSeeds(seeds[0:numberOfSeeds], graph, step)
+                    print('we selected =>', seeds[0:numberOfSeeds], 'in time =>', time)
+                    selectedSeeds = copy.copy(seeds[0:numberOfSeeds])
+
+                    #usuwamy z tablicy wykorzystane seedy
+                    del seeds[0:numberOfSeeds]
+
+                    print('whole ranking =>', seeds)
 
             # print('Moje seedy', seeds, step % interval == 0)
         infecting = infections
